@@ -1,11 +1,14 @@
 /target
 /temp
 /scripts
+/src/ffi/build
 /src/ffi/scripts
 
 
 *.lock
-deno.json
+*.o
 
+deno.json
+build.log
 
 
