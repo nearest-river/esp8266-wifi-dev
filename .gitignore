@@ -1,0 +1,11 @@
+/target
+/temp
+/scripts
+/src/ffi/scripts
+
+
+*.lock
+deno.json
+
+
+
