@@ -1,0 +1,13 @@
+[target.xtensa-esp8266-none-elf]
+runner = "esp-build --flash --monitor"
+
+[env]
+ESP_LOG="info"
+
+[build]
+# rustflags = ["-C", "link-arg=-nostartfiles", "-C", "link-arg=-Wl,-Tlink.x"]
+# target = "xtensa-esp8266-none-elf"
+
+[unstable]
+build-std = ["core","alloc"]
+

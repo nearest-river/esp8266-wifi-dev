@@ -1,0 +1,31 @@
+[package]
+name = "esp8266-wifi-dev"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+log = { version = "0.4.22" }
+xtensa-lx-rt = { version = "0.16.0", features = ["esp8266"] }
+xtensa-lx = { version = "0.7.0", features = ["esp8266"] }
+panic-halt = "0.2.0"
+esp8266-hal = { version = "0.5.0" }
+esp8266 = "0.6.0"
+embedded-hal = { version = "0.2.4", features = ["unproven"] }
+# esp8266-nonos-sdk = { path = "../esp8266-nonos-sdk" }
+
+
+
+[profile.dev]
+# Rust debug is too slow.
+# For debug builds always builds with some optimization
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1 # LLVM can perform better optimizations using a single thread
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'fat'
+opt-level = 'z'
+overflow-checks = false
+
