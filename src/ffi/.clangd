@@ -1,0 +1,7 @@
+CompileFlags:
+  Add: [
+    "-I$HOME/opt/esp-open-sdk/xtensa-lx106-elf/xtensa-lx106-elf/include/"
+  ]
+
+
+
