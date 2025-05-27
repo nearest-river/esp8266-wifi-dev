@@ -10,5 +10,5 @@
 
 deno.json
 build.log
-
+/lib/libesp8266-sys-core.a
 
