@@ -85,24 +85,11 @@ extern "C" {
 #endif
 
 #if BYTE_ORDER == BIG_ENDIAN
-#define lwip_htons(x) (x)
-#define lwip_ntohs(x) (x)
-#define lwip_htonl(x) (x)
-#define lwip_ntohl(x) (x)
 #define PP_HTONS(x) (x)
 #define PP_NTOHS(x) (x)
 #define PP_HTONL(x) (x)
 #define PP_NTOHL(x) (x)
 #else /* BYTE_ORDER != BIG_ENDIAN */
-#ifndef lwip_htons
-u16 lwip_htons(u16 x);
-#endif
-#define lwip_ntohs(x) lwip_htons(x)
-
-#ifndef lwip_htonl
-u32 lwip_htonl(u32 x);
-#endif
-#define lwip_ntohl(x) lwip_htonl(x)
 
 /* These macros should be calculated by the preprocessor and are used
    with compile-time constants only (so that there is no little-endian
@@ -118,10 +105,10 @@ u32 lwip_htonl(u32 x);
 
 /* Provide usual function names as macros for users, but this can be turned off */
 #ifndef LWIP_DONT_PROVIDE_BYTEORDER_FUNCTIONS
-#define htons(x) lwip_htons(x)
-#define ntohs(x) lwip_ntohs(x)
-#define htonl(x) lwip_htonl(x)
-#define ntohl(x) lwip_ntohl(x)
+#define htons(x) u16_high_to_neutral(x)
+#define ntohs(x) u16_neutral_to_high(x)
+#define htonl(x) u32_high_to_neutral(x)
+#define ntohl(x) u32_neutral_to_high(x)
 #endif
 
 /* Functions that are not available as standard implementations.

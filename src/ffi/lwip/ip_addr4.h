@@ -107,7 +107,7 @@ struct netif;
                                     (src)->addr))
 /** Set complete address to zero */
 #define ip4_addr_set_zero(ipaddr)     ((ipaddr)->addr = 0)
-/** Set address to IPADDR_ANY (no need for lwip_htonl()) */
+/** Set address to IPADDR_ANY (no need for u32_high_to_neutral()) */
 #define ip4_addr_set_any(ipaddr)      ((ipaddr)->addr = IPADDR_ANY)
 /** Set address to loopback address */
 #define ip4_addr_set_loopback(ipaddr) ((ipaddr)->addr = PP_HTONL(IPADDR_LOOPBACK))
@@ -117,7 +117,7 @@ struct netif;
  * from host- to network-order. */
 #define ip4_addr_set_hton(dest, src) ((dest)->addr = \
                                ((src) == NULL ? 0:\
-                               lwip_htonl((src)->addr)))
+                               u32_high_to_neutral((src)->addr)))
 /** IPv4 only: set the IP address given as an u32 */
 #define ip4_addr_set_u32(dest_ipaddr, src_u32) ((dest_ipaddr)->addr = (src_u32))
 /** IPv4 only: get the IP address as an u32 */

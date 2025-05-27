@@ -825,7 +825,16 @@ netconn_recv(struct netconn *conn, struct netbuf **new_buf)
     buf->p = p;
     buf->ptr = p;
     buf->port = 0;
-    ip_addr_set_zero(&buf->addr);
+    // ip_addr_set_zero(&buf->addr);
+    switch(buf->addr.type) {
+      case IPADDR_TYPE_V6:
+        memset(buf->addr.u_addr.ip6.addr,0u,sizeof(u32)*4);
+      break;
+      default:
+        buf->addr.u_addr.ip4.addr=0;
+      break;
+    }
+
     *new_buf = buf;
     /* don't set conn->last_err: it's only ERR_OK, anyway */
     return ERR_OK;
@@ -854,8 +863,8 @@ netconn_recv(struct netconn *conn, struct netbuf **new_buf)
  */
 err_t netconn_sendto(struct netconn *conn, struct netbuf *buf, const ip_addr_t *addr, u16 port) {
   if (buf != NULL) {
-    ip_addr_set(&buf->addr,addr);
-
+    // ip_addr_set(&buf->addr,addr);
+    buf->addr=addr==NULL?(ip_addr_t){0}:*addr;
     buf->port = port;
     return netconn_send(conn, buf);
   }

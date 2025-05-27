@@ -80,21 +80,21 @@ typedef struct ip6_addr ip6_addr_t;
   ip6_addr_clear_zone(ip6addr); } while(0)
 
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK1(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[0]) >> 16) & 0xffff))
+#define IP6_ADDR_BLOCK1(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[0]) >> 16) & 0xffff))
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK2(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[0])) & 0xffff))
+#define IP6_ADDR_BLOCK2(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[0])) & 0xffff))
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK3(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[1]) >> 16) & 0xffff))
+#define IP6_ADDR_BLOCK3(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[1]) >> 16) & 0xffff))
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK4(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[1])) & 0xffff))
+#define IP6_ADDR_BLOCK4(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[1])) & 0xffff))
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK5(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[2]) >> 16) & 0xffff))
+#define IP6_ADDR_BLOCK5(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[2]) >> 16) & 0xffff))
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK6(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[2])) & 0xffff))
+#define IP6_ADDR_BLOCK6(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[2])) & 0xffff))
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK7(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[3]) >> 16) & 0xffff))
+#define IP6_ADDR_BLOCK7(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[3]) >> 16) & 0xffff))
 /** Access address in 16-bit block */
-#define IP6_ADDR_BLOCK8(ip6addr) ((u16)((lwip_htonl((ip6addr)->addr[3])) & 0xffff))
+#define IP6_ADDR_BLOCK8(ip6addr) ((u16)((u32_high_to_neutral((ip6addr)->addr[3])) & 0xffff))
 
 /** Copy IPv6 address - faster than ip6_addr_set: no NULL check */
 #define ip6_addr_copy(dest, src) do{(dest).addr[0] = (src).addr[0]; \
@@ -129,7 +129,7 @@ typedef struct ip6_addr ip6_addr_t;
                                          (ip6addr)->addr[3] = 0; \
                                          ip6_addr_clear_zone(ip6addr);}while(0)
 
-/** Set address to ipv6 'any' (no need for lwip_htonl()) */
+/** Set address to ipv6 'any' (no need for u32_high_to_neutral()) */
 #define ip6_addr_set_any(ip6addr)       ip6_addr_set_zero(ip6addr)
 /** Set address to ipv6 loopback address */
 #define ip6_addr_set_loopback(ip6addr) do{(ip6addr)->addr[0] = 0; \
@@ -139,10 +139,10 @@ typedef struct ip6_addr ip6_addr_t;
                                           ip6_addr_clear_zone(ip6addr);}while(0)
 /** Safely copy one IPv6 address to another and change byte order
  * from host- to network-order. */
-#define ip6_addr_set_hton(dest, src) do{(dest)->addr[0] = (src) == NULL ? 0 : lwip_htonl((src)->addr[0]); \
-                                        (dest)->addr[1] = (src) == NULL ? 0 : lwip_htonl((src)->addr[1]); \
-                                        (dest)->addr[2] = (src) == NULL ? 0 : lwip_htonl((src)->addr[2]); \
-                                        (dest)->addr[3] = (src) == NULL ? 0 : lwip_htonl((src)->addr[3]); \
+#define ip6_addr_set_hton(dest, src) do{(dest)->addr[0] = (src) == NULL ? 0 : u32_high_to_neutral((src)->addr[0]); \
+                                        (dest)->addr[1] = (src) == NULL ? 0 : u32_high_to_neutral((src)->addr[1]); \
+                                        (dest)->addr[2] = (src) == NULL ? 0 : u32_high_to_neutral((src)->addr[2]); \
+                                        (dest)->addr[3] = (src) == NULL ? 0 : u32_high_to_neutral((src)->addr[3]); \
                                         ip6_addr_set_zone((dest), (src) == NULL ? IP6_NO_ZONE : ip6_addr_zone(src));}while(0)
 
 
@@ -187,7 +187,7 @@ typedef struct ip6_addr ip6_addr_t;
                                     ((ip6addr)->addr[3] == (paddr)->addr[3]) && \
                                     ip6_addr_equals_zone((ip6addr), (zone_idx)))
 
-#define ip6_get_subnet_id(ip6addr)   (lwip_htonl((ip6addr)->addr[2]) & 0x0000ffffUL)
+#define ip6_get_subnet_id(ip6addr)   (u32_high_to_neutral((ip6addr)->addr[2]) & 0x0000ffffUL)
 
 #define ip6_addr_isany_val(ip6addr) (((ip6addr).addr[0] == 0) && \
                                      ((ip6addr).addr[1] == 0) && \
@@ -214,7 +214,7 @@ typedef struct ip6_addr ip6_addr_t;
 #define ip6_addr_multicast_transient_flag(ip6addr)  ((ip6addr)->addr[0] & PP_HTONL(0x00100000UL))
 #define ip6_addr_multicast_prefix_flag(ip6addr)     ((ip6addr)->addr[0] & PP_HTONL(0x00200000UL))
 #define ip6_addr_multicast_rendezvous_flag(ip6addr) ((ip6addr)->addr[0] & PP_HTONL(0x00400000UL))
-#define ip6_addr_multicast_scope(ip6addr) ((lwip_htonl((ip6addr)->addr[0]) >> 16) & 0xf)
+#define ip6_addr_multicast_scope(ip6addr) ((u32_high_to_neutral((ip6addr)->addr[0]) >> 16) & 0xf)
 #define IP6_MULTICAST_SCOPE_RESERVED            0x0
 #define IP6_MULTICAST_SCOPE_RESERVED0           0x0
 #define IP6_MULTICAST_SCOPE_INTERFACE_LOCAL     0x1

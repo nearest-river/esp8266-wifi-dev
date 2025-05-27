@@ -82,16 +82,16 @@ PACK_STRUCT_END
 
 #define TCP_MAX_OPTION_BYTES 40
 
-#define TCPH_HDRLEN(phdr) ((u16)(lwip_ntohs((phdr)->_hdrlen_rsvd_flags) >> 12))
+#define TCPH_HDRLEN(phdr) ((u16)(u16_neutral_to_high((phdr)->_hdrlen_rsvd_flags) >> 12))
 #define TCPH_HDRLEN_BYTES(phdr) ((u8)(TCPH_HDRLEN(phdr) << 2))
-#define TCPH_FLAGS(phdr)  ((u8)((lwip_ntohs((phdr)->_hdrlen_rsvd_flags) & TCP_FLAGS)))
+#define TCPH_FLAGS(phdr)  ((u8)((u16_neutral_to_high((phdr)->_hdrlen_rsvd_flags) & TCP_FLAGS)))
 
-#define TCPH_HDRLEN_SET(phdr, len) (phdr)->_hdrlen_rsvd_flags = lwip_htons(((len) << 12) | TCPH_FLAGS(phdr))
-#define TCPH_FLAGS_SET(phdr, flags) (phdr)->_hdrlen_rsvd_flags = (((phdr)->_hdrlen_rsvd_flags & PP_HTONS(~TCP_FLAGS)) | lwip_htons(flags))
-#define TCPH_HDRLEN_FLAGS_SET(phdr, len, flags) (phdr)->_hdrlen_rsvd_flags = (u16)(lwip_htons((u16)((len) << 12) | (flags)))
+#define TCPH_HDRLEN_SET(phdr, len) (phdr)->_hdrlen_rsvd_flags = u16_high_to_neutral(((len) << 12) | TCPH_FLAGS(phdr))
+#define TCPH_FLAGS_SET(phdr, flags) (phdr)->_hdrlen_rsvd_flags = (((phdr)->_hdrlen_rsvd_flags & PP_HTONS(~TCP_FLAGS)) | u16_high_to_neutral(flags))
+#define TCPH_HDRLEN_FLAGS_SET(phdr, len, flags) (phdr)->_hdrlen_rsvd_flags = (u16)(u16_high_to_neutral((u16)((len) << 12) | (flags)))
 
-#define TCPH_SET_FLAG(phdr, flags ) (phdr)->_hdrlen_rsvd_flags = ((phdr)->_hdrlen_rsvd_flags | lwip_htons(flags))
-#define TCPH_UNSET_FLAG(phdr, flags) (phdr)->_hdrlen_rsvd_flags = ((phdr)->_hdrlen_rsvd_flags & ~lwip_htons(flags))
+#define TCPH_SET_FLAG(phdr, flags ) (phdr)->_hdrlen_rsvd_flags = ((phdr)->_hdrlen_rsvd_flags | u16_high_to_neutral(flags))
+#define TCPH_UNSET_FLAG(phdr, flags) (phdr)->_hdrlen_rsvd_flags = ((phdr)->_hdrlen_rsvd_flags & ~u16_high_to_neutral(flags))
 
 #ifdef __cplusplus
 }
