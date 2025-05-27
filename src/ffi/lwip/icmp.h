@@ -44,7 +44,7 @@
 #include "prot/icmp.h"
 
 #if LWIP_IPV6 && LWIP_ICMP6
-#include "lwip/icmp6.h"
+#include "icmp6.h"
 #endif
 
 #ifdef __cplusplus

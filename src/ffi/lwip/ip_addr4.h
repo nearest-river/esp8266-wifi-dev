@@ -47,12 +47,13 @@
 extern "C" {
 #endif
 
-
 /** ip4_addr_t uses a struct for convenience only, so that the same defines can
  * operate both on ip4_addr_t as well as on ip4_addr_p_t. */
-typedef struct ip4_addr ip4_addr_t;
+typedef struct ip4_addr {
+  u32 addr;
+} ip4_addr_t;
 
-/* Forward declaration to not include netif.h */
+
 struct netif;
 
 /** 255.255.255.255 */

@@ -106,3 +106,93 @@ u8 pbuf_free(struct pbuf* p) {
   return count;
 }
 
+
+u16 pbuf_copy_partial(const struct pbuf* buf, void* dataptr, u16 len, u16 offset) {
+  const struct pbuf* p;
+  u16 left = 0;
+  u16 buf_copy_len;
+  u16 copied_total = 0;
+
+  LWIP_ERROR("pbuf_copy_partial: invalid buf", (buf != NULL), return 0;);
+  LWIP_ERROR("pbuf_copy_partial: invalid dataptr", (dataptr != NULL), return 0;);
+
+  /* Note some systems use byte copy if dataptr or one of the pbuf payload pointers are unaligned. */
+  for (p = buf; len != 0 && p != NULL; p = p->next) {
+    if ((offset != 0) && (offset >= p->len)) {
+      /* don't copy from this buffer -> on to the next */
+      offset = (u16)(offset - p->len);
+    } else {
+      /* copy from this buffer. maybe only partially. */
+      buf_copy_len = (u16)(p->len - offset);
+      if (buf_copy_len > len) {
+        buf_copy_len = len;
+      }
+      /* copy the necessary parts of the buffer */
+      MEMCPY(&((char *)dataptr)[left], &((char *)p->payload)[offset], buf_copy_len);
+      copied_total = (u16)(copied_total + buf_copy_len);
+      left = (u16)(left + buf_copy_len);
+      len = (u16)(len - buf_copy_len);
+      offset = 0;
+    }
+  }
+  return copied_total;
+}
+
+
+struct pbuf* pbuf_free_header(struct pbuf *q, u16 size) {
+  struct pbuf *p = q;
+  u16 free_left = size;
+  while (free_left && p) {
+    if (free_left >= p->len) {
+      struct pbuf *f = p;
+      free_left = (u16)(free_left - p->len);
+      p = p->next;
+      f->next = 0;
+      pbuf_free(f);
+    } else {
+      pbuf_remove_header(p, free_left);
+      free_left = 0;
+    }
+  }
+  return p;
+}
+
+
+u8 pbuf_remove_header(struct pbuf* p,usize header_size_decrement) {
+  void* payload;
+  u16 increment_magnitude;
+
+  LWIP_ASSERT("p != NULL", p != NULL);
+  if ((p == NULL) || (header_size_decrement > 0xFFFF)) {
+    return 1;
+  }
+  if (header_size_decrement == 0) {
+    return 0;
+  }
+
+  increment_magnitude = (u16)header_size_decrement;
+  /* Check that we aren't going to move off the end of the pbuf */
+  LWIP_ERROR("increment_magnitude <= p->len", (increment_magnitude <= p->len), return 1;);
+
+  /* remember current payload pointer */
+  payload = p->payload;
+  LWIP_UNUSED_ARG(payload); /* only used in LWIP_DEBUGF below */
+
+  /* increase payload pointer (guarded by length check above) */
+  p->payload = (u8*)p->payload + header_size_decrement;
+  /* modify pbuf length fields */
+  p->len = (u16)(p->len - increment_magnitude);
+  p->tot_len = (u16)(p->tot_len - increment_magnitude);
+
+  LWIP_DEBUGF(PBUF_DEBUG | LWIP_DBG_TRACE, ("pbuf_remove_header: old %p new %p (%"U16_F")\n",
+              (void *)payload, (void *)p->payload, increment_magnitude));
+
+  return 0;
+}
+
+
+
+
+
+
+

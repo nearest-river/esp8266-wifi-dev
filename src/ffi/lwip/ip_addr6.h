@@ -56,15 +56,15 @@ extern "C" {
 
 /** This is the aligned version of ip6_addr_t,
     used as local variable, on the stack, etc. */
-struct ip6_addr {
+typedef struct ip6_addr {
   u32 addr[4];
 #if LWIP_IPV6_SCOPES
   u8 zone;
 #endif /* LWIP_IPV6_SCOPES */
-};
+} ip6_addr_t;
 
-/** IPv6 address */
-typedef struct ip6_addr ip6_addr_t;
+#define IP6_NO_ZONE 0
+
 
 /** Set an IPv6 partial address given by byte-parts */
 #define IP6_ADDR_PART(ip6addr, index, a,b,c,d) \

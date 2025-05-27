@@ -6,8 +6,21 @@
 #include "err.h"
 #include "sockets.h"
 
-static struct lwip_sock sockets[NUM_SOCKETS];
+/* This is to keep track of IP_JOIN_GROUP calls to drop the membership when
+   a socket is closed */
+struct lwip_socket_multicast_mld6_pair {
+  /** the socket */
+  struct lwip_sock *sock;
+  /** the interface index */
+  u8 if_idx;
+  /** the group address */
+  ip6_addr_t multi_addr;
+};
 
+struct lwip_socket_multicast_mld6_pair socket_ipv6_multicast_memberships[LWIP_SOCKET_MAX_MEMBERSHIPS];
+
+static struct lwip_sock sockets[NUM_SOCKETS];
+static void lwip_socket_drop_registered_mld6_memberships(int s);
 
 
 isize lwip_write(int s,const void* data,usize size) {
@@ -786,6 +799,34 @@ int lwip_close(int s) {
   set_errno(0);
   return 0;
 }
+
+static void lwip_socket_drop_registered_mld6_memberships(int s) {
+  struct lwip_sock* sock = get_socket(s);
+  int i;
+
+  if (!sock) {
+    return;
+  }
+
+  for (i = 0; i < LWIP_SOCKET_MAX_MEMBERSHIPS; i++) {
+    if(socket_ipv6_multicast_memberships[i].sock == sock) {
+      ip_addr_t multi_addr;
+      u8 if_idx;
+
+      ip_addr_copy_from_ip6(multi_addr, socket_ipv6_multicast_memberships[i].multi_addr);
+      if_idx = socket_ipv6_multicast_memberships[i].if_idx;
+
+      socket_ipv6_multicast_memberships[i].sock   = NULL;
+      socket_ipv6_multicast_memberships[i].if_idx = NETIF_NO_INDEX;
+      ip6_addr_set_zero(&socket_ipv6_multicast_memberships[i].multi_addr);
+
+      netconn_join_leave_group_netif(sock->conn, &multi_addr, if_idx, NETCONN_LEAVE);
+    }
+  }
+  done_socket(sock);
+}
+
+
 
 
 

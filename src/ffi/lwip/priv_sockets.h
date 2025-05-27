@@ -46,12 +46,6 @@
 #endif /* LWIP_IPV4 */
 
 
-#define ip6_addr_zone(ip6addr)
-//((ip6addr)->zone)
-#define ip6_addr_set_zone(ip6addr, zone_idx)
-// ((ip6addr)->zone = (zone_idx))
-#define ip6_addr_clear_zone(ip6addr) 
-
 #if LWIP_IPV6
 #define IP6ADDR_PORT_TO_SOCKADDR(sin6, ipaddr, port) do { \
       (sin6)->sin6_len = sizeof(struct sockaddr_in6); \
@@ -69,6 +63,7 @@
 #endif /* LWIP_IPV6 */
 
 #if LWIP_IPV4 && LWIP_IPV6
+static void sockaddr_to_ipaddr_port(const struct sockaddr* sockaddr, ip_addr_t* ipaddr,u16* port);
 #define SOCKADDR_TO_IPADDR_PORT(sockaddr, ipaddr, port) sockaddr_to_ipaddr_port(sockaddr, ipaddr, &(port))
 #elif LWIP_IPV6
 #define SOCKADDR_TO_IPADDR_PORT(sockaddr, ipaddr, port) \
@@ -91,25 +86,6 @@
 #endif
 
 
-struct in6_addr {
-  union {
-    u32 u32_addr[4];
-    u8  u8_addr[16];
-  } un;
-#define s6_addr  un.u8_addr
-};
-
-
-struct sockaddr_in6 {
-  u8            sin6_len;      /* length of this structure    */
-  sa_family_t     sin6_family;   /* AF_INET6                    */
-  in_port_t       sin6_port;     /* Transport layer port #      */
-  u32           sin6_flowinfo; /* IPv6 flow information       */
-  struct in6_addr sin6_addr;     /* IPv6 address                */
-  u32           sin6_scope_id; /* Set of interfaces for scope */
-};
-
-
 union sockaddr_aligned {
   struct sockaddr sa;
 #if LWIP_IPV6
@@ -130,14 +106,6 @@ union sockaddr_aligned {
                                                                  (target_ip6addr)->addr[2] = (source_in6addr)->un.u32_addr[2]; \
                                                                  (target_ip6addr)->addr[3] = (source_in6addr)->un.u32_addr[3]; \
                                                                  ip6_addr_clear_zone(target_ip6addr);}
-
-#define IP6ADDR_PORT_TO_SOCKADDR(sin6, ipaddr, port) do { \
-      (sin6)->sin6_len = sizeof(struct sockaddr_in6); \
-      (sin6)->sin6_family = AF_INET6; \
-      (sin6)->sin6_port = u16_neutral_to_high((port)); \
-      (sin6)->sin6_flowinfo = 0; \
-      inet6_addr_from_ip6addr(&(sin6)->sin6_addr, ipaddr); \
-      /*(sin6)->sin6_scope_id = ip6_addr_zone(ipaddr)*/ }while(0)
 
 #define IPADDR_PORT_TO_SOCKADDR(sockaddr, ipaddr, port) do { \
     if (IP_IS_ANY_TYPE_VAL(*ipaddr) || IP_IS_V6_VAL(*ipaddr)) { \

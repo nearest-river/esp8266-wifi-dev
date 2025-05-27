@@ -3,6 +3,7 @@
 #include "../prelude.h"
 #include "prelude.h"
 #include "err.h"
+#include "ip_addr.h"
 
 
 /** "Network buffer" - contains data and addressing info */

@@ -130,7 +130,7 @@ struct api_msg {
 #if LWIP_SO_SNDTIMEO || LWIP_SO_LINGER
       u32 time_started;
 #else /* LWIP_SO_SNDTIMEO || LWIP_SO_LINGER */
-      u8_t polls_left;
+      u8 polls_left;
 #endif /* LWIP_SO_SNDTIMEO || LWIP_SO_LINGER */
     } sd;
 #endif /* LWIP_TCP */
@@ -177,7 +177,7 @@ struct dns_api_msg {
   ip_addr_t API_MSG_M_DEF(addr);
 #if LWIP_IPV4 && LWIP_IPV6
   /** Type of resolve call */
-  u8_t dns_addrtype;
+  u8 dns_addrtype;
 #endif /* LWIP_IPV4 && LWIP_IPV6 */
   /** This semaphore is posted when the name is resolved, the application thread
       should wait on it. */

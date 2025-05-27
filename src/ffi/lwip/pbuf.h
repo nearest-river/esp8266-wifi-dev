@@ -306,7 +306,7 @@ void pbuf_cat(struct pbuf* head, struct pbuf* tail);
 void pbuf_chain(struct pbuf* head, struct pbuf* tail);
 struct pbuf* pbuf_dechain(struct pbuf* p);
 err_t pbuf_copy(struct pbuf* p_to, const struct pbuf* p_from);
-u16 pbuf_copy_partial(const struct pbuf* p, void* dataptr, u16 len, u16 offset);
+u16 pbuf_copy_partial(const struct pbuf* buf, void* dataptr, u16 len, u16 offset);
 void* pbuf_get_contiguous(const struct pbuf* p, void* buffer, size_t bufsize, u16 len, u16 offset);
 err_t pbuf_take(struct pbuf* buf, const void* dataptr, u16 len);
 err_t pbuf_take_at(struct pbuf* buf, const void* dataptr, u16 len, u16 offset);

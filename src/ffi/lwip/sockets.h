@@ -45,9 +45,9 @@
 
 #include "../prelude.h"
 #include "prelude.h"
-//#include "lwip/netif.h"
+#include "netif.h"
 #include "err.h"
-//#include "lwip/inet.h"
+#include "inet.h"
 #include "errno.h"
 
 #ifdef __cplusplus
